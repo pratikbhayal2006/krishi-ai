@@ -1,0 +1,106 @@
+export const languages = [
+  { code: "en", name: "English", native: "English" },
+  { code: "hi", name: "Hindi", native: "हिन्दी" },
+  { code: "mr", name: "Marathi", native: "मराठी" },
+  { code: "gu", name: "Gujarati", native: "ગુજરાતી" },
+  { code: "pa", name: "Punjabi", native: "ਪੰਜਾਬੀ" },
+  { code: "bn", name: "Bengali", native: "বাংলা" },
+  { code: "te", name: "Telugu", native: "తెలుగు" },
+  { code: "ta", name: "Tamil", native: "தமிழ்" },
+  { code: "kn", name: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "ml", name: "Malayalam", native: "മലയാളം" },
+  { code: "or", name: "Odia", native: "ଓଡ଼ିଆ" },
+  { code: "as", name: "Assamese", native: "অসমীয়া" },
+];
+
+export const states = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
+
+export const districts: Record<string, string[]> = {
+  "Maharashtra": ["Pune", "Mumbai", "Nagpur", "Nashik", "Aurangabad", "Solapur", "Kolhapur", "Sangli", "Satara", "Ahmednagar"],
+  "Punjab": ["Amritsar", "Ludhiana", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Firozpur", "Gurdaspur", "Sangrur", "Moga"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Prayagraj", "Meerut", "Bareilly", "Aligarh", "Moradabad", "Ghaziabad"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Mehsana"],
+  "Karnataka": ["Bangalore", "Mysore", "Hubli", "Mangalore", "Belgaum", "Gulbarga", "Davangere", "Bellary", "Shimoga", "Tumkur"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore", "Thanjavur", "Dindigul"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Bikaner", "Ajmer", "Alwar", "Bhilwara", "Sikar", "Bharatpur"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"],
+  "West Bengal": ["Kolkata", "Howrah", "Darjeeling", "Siliguri", "Asansol", "Durgapur", "Bardhaman", "Malda", "Hooghly", "Nadia"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Medak", "Rangareddy"],
+};
+
+export const tehsils: Record<string, string[]> = {
+  "Pune": ["Haveli", "Mulshi", "Maval", "Junnar", "Ambegaon", "Khed", "Shirur", "Baramati", "Indapur", "Daund"],
+  "Amritsar": ["Amritsar-I", "Amritsar-II", "Ajnala", "Baba Bakala", "Majitha", "Verka"],
+  "Lucknow": ["Lucknow", "Mohanlalganj", "Bakshi Ka Talab", "Malihabad", "Sarojini Nagar"],
+  "Ahmedabad": ["Ahmedabad City", "Daskroi", "Dholka", "Sanand", "Bavla", "Detroj-Rampura"],
+  "Bangalore": ["Bangalore North", "Bangalore South", "Anekal", "Bangalore East"],
+  "Chennai": ["Chennai", "Ambattur", "Madhavaram", "Tondiarpet", "Mylapore"],
+  "Jaipur": ["Jaipur", "Amber", "Sanganer", "Bassi", "Chaksu", "Jamwa Ramgarh"],
+  "Bhopal": ["Bhopal", "Huzur", "Berasia", "Phanda"],
+  "Kolkata": ["Kolkata", "Alipore", "Behala", "Garden Reach"],
+  "Hyderabad": ["Hyderabad", "Secunderabad", "Golconda", "Charminar"],
+};
+
+export const soilTypes = [
+  { value: "alluvial", label: "Alluvial Soil (जलोढ़ मिट्टी)" },
+  { value: "black", label: "Black Soil (काली मिट्टी)" },
+  { value: "red", label: "Red Soil (लाल मिट्टी)" },
+  { value: "laterite", label: "Laterite Soil (लेटराइट मिट्टी)" },
+  { value: "sandy", label: "Sandy Soil (रेतीली मिट्टी)" },
+  { value: "clayey", label: "Clayey Soil (चिकनी मिट्टी)" },
+  { value: "loamy", label: "Loamy Soil (दोमट मिट्टी)" },
+  { value: "saline", label: "Saline Soil (लवणीय मिट्टी)" },
+];
+
+export const irrigationTypes = [
+  { value: "canal", label: "Canal Irrigation (नहर सिंचाई)" },
+  { value: "well", label: "Well Irrigation (कुआं सिंचाई)" },
+  { value: "tubewell", label: "Tubewell (ट्यूबवेल)" },
+  { value: "drip", label: "Drip Irrigation (टपक सिंचाई)" },
+  { value: "sprinkler", label: "Sprinkler (फव्वारा सिंचाई)" },
+  { value: "rainfed", label: "Rainfed (वर्षा आधारित)" },
+  { value: "tank", label: "Tank Irrigation (तालाब सिंचाई)" },
+];
+
+export const previousCrops = [
+  { value: "wheat", label: "Wheat (गेहूं)" },
+  { value: "rice", label: "Rice (चावल)" },
+  { value: "cotton", label: "Cotton (कपास)" },
+  { value: "sugarcane", label: "Sugarcane (गन्ना)" },
+  { value: "maize", label: "Maize (मक्का)" },
+  { value: "soybean", label: "Soybean (सोयाबीन)" },
+  { value: "groundnut", label: "Groundnut (मूंगफली)" },
+  { value: "pulses", label: "Pulses (दालें)" },
+  { value: "vegetables", label: "Vegetables (सब्जियां)" },
+  { value: "mustard", label: "Mustard (सरसों)" },
+  { value: "none", label: "None / Fallow (कोई नहीं / परती)" },
+];
