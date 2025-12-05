@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import {
@@ -19,14 +18,9 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import {
-  states,
-  districts,
-  tehsils,
-  soilTypes,
-  irrigationTypes,
-  previousCrops,
-} from "@/data/indianLocations";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useLocations } from "@/hooks/useLocations";
+import { getSoilTypes, getIrrigationTypes, getPreviousCrops } from "@/services/locationService";
 import {
   MapPin,
   Layers,
@@ -36,6 +30,7 @@ import {
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 
 export interface FarmData {
@@ -56,6 +51,9 @@ interface FarmInputFormProps {
 }
 
 export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
+  const { t, language } = useLanguage();
+  const { states, districts, tehsils, villages, isLoading, loadDistricts, loadTehsils, loadVillages } = useLocations();
+  
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FarmData>({
     state: "",
@@ -70,16 +68,24 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
   });
 
   const totalSteps = 3;
+  const soilTypes = getSoilTypes(language);
+  const irrigationTypes = getIrrigationTypes(language);
+  const previousCrops = getPreviousCrops(language);
 
   const updateField = <K extends keyof FarmData>(field: K, value: FarmData[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     
-    // Reset dependent fields
-    if (field === "state") {
-      setFormData((prev) => ({ ...prev, district: "", tehsil: "" }));
+    if (field === "state" && typeof value === "string") {
+      setFormData((prev) => ({ ...prev, district: "", tehsil: "", village: "" }));
+      loadDistricts(value);
     }
-    if (field === "district") {
-      setFormData((prev) => ({ ...prev, tehsil: "" }));
+    if (field === "district" && typeof value === "string") {
+      setFormData((prev) => ({ ...prev, tehsil: "", village: "" }));
+      loadTehsils(value);
+    }
+    if (field === "tehsil" && typeof value === "string") {
+      setFormData((prev) => ({ ...prev, village: "" }));
+      loadVillages(value);
     }
   };
 
@@ -112,18 +118,13 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
     }
   };
 
-  const availableDistricts = formData.state ? districts[formData.state] || [] : [];
-  const availableTehsils = formData.district ? tehsils[formData.district] || [] : [];
-
   return (
     <section className="min-h-screen py-8 px-6 bg-background">
       <div className="container mx-auto max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8 animate-fade-in">
-          <h2 className="text-3xl font-bold text-foreground mb-2">Farm Details</h2>
-          <p className="text-muted-foreground">
-            Tell us about your farm to get personalized crop recommendations
-          </p>
+          <h2 className="text-3xl font-bold text-foreground mb-2">{t("form.title")}</h2>
+          <p className="text-muted-foreground">{t("form.subtitle")}</p>
         </div>
 
         {/* Progress Steps */}
@@ -164,17 +165,17 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                   <MapPin className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">Farm Location</h3>
-                  <p className="text-sm text-muted-foreground">Where is your farm located?</p>
+                  <h3 className="text-xl font-semibold">{t("form.step1.title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("form.step1.subtitle")}</p>
                 </div>
               </div>
 
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="state">State *</Label>
+                  <Label htmlFor="state">{t("form.field.state")} *</Label>
                   <Select value={formData.state} onValueChange={(v) => updateField("state", v)}>
                     <SelectTrigger id="state">
-                      <SelectValue placeholder="Select State" />
+                      <SelectValue placeholder={t("form.placeholder.state")} />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50 max-h-60">
                       {states.map((state) => (
@@ -187,17 +188,24 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="district">District *</Label>
+                  <Label htmlFor="district">{t("form.field.district")} *</Label>
                   <Select
                     value={formData.district}
                     onValueChange={(v) => updateField("district", v)}
-                    disabled={!formData.state}
+                    disabled={!formData.state || isLoading}
                   >
                     <SelectTrigger id="district">
-                      <SelectValue placeholder="Select District" />
+                      {isLoading ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {t("loading.locations")}
+                        </span>
+                      ) : (
+                        <SelectValue placeholder={t("form.placeholder.district")} />
+                      )}
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50 max-h-60">
-                      {availableDistricts.map((district) => (
+                      {districts.map((district) => (
                         <SelectItem key={district} value={district}>
                           {district}
                         </SelectItem>
@@ -207,17 +215,17 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tehsil">Tehsil / Block</Label>
+                  <Label htmlFor="tehsil">{t("form.field.tehsil")}</Label>
                   <Select
                     value={formData.tehsil}
                     onValueChange={(v) => updateField("tehsil", v)}
-                    disabled={!formData.district}
+                    disabled={!formData.district || tehsils.length === 0}
                   >
                     <SelectTrigger id="tehsil">
-                      <SelectValue placeholder="Select Tehsil (Optional)" />
+                      <SelectValue placeholder={t("form.placeholder.tehsil")} />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50 max-h-60">
-                      {availableTehsils.map((tehsil) => (
+                      {tehsils.map((tehsil) => (
                         <SelectItem key={tehsil} value={tehsil}>
                           {tehsil}
                         </SelectItem>
@@ -227,13 +235,23 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="village">Village / Town</Label>
-                  <Input
-                    id="village"
-                    placeholder="Enter village or town name"
+                  <Label htmlFor="village">{t("form.field.village")}</Label>
+                  <Select
                     value={formData.village}
-                    onChange={(e) => updateField("village", e.target.value)}
-                  />
+                    onValueChange={(v) => updateField("village", v)}
+                    disabled={!formData.tehsil || villages.length === 0}
+                  >
+                    <SelectTrigger id="village">
+                      <SelectValue placeholder={t("form.placeholder.village")} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-border z-50 max-h-60">
+                      {villages.map((village) => (
+                        <SelectItem key={village} value={village}>
+                          {village}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -247,17 +265,17 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                   <Layers className="w-6 h-6 text-soil-brown" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">Soil & Irrigation</h3>
-                  <p className="text-sm text-muted-foreground">Tell us about your soil conditions</p>
+                  <h3 className="text-xl font-semibold">{t("form.step2.title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("form.step2.subtitle")}</p>
                 </div>
               </div>
 
               <div className="grid gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="soilType">Soil Type *</Label>
+                  <Label htmlFor="soilType">{t("form.field.soilType")} *</Label>
                   <Select value={formData.soilType} onValueChange={(v) => updateField("soilType", v)}>
                     <SelectTrigger id="soilType">
-                      <SelectValue placeholder="Select Soil Type" />
+                      <SelectValue placeholder={t("form.placeholder.soilType")} />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50">
                       {soilTypes.map((soil) => (
@@ -271,7 +289,7 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label>Soil pH Level</Label>
+                    <Label>{t("form.field.soilPh")}</Label>
                     <span className="text-lg font-semibold text-primary">{formData.soilPh.toFixed(1)}</span>
                   </div>
                   <Slider
@@ -283,20 +301,20 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                     className="py-2"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Acidic (4.0)</span>
-                    <span>Neutral (7.0)</span>
-                    <span>Alkaline (9.0)</span>
+                    <span>{t("form.ph.acidic")}</span>
+                    <span>{t("form.ph.neutral")}</span>
+                    <span>{t("form.ph.alkaline")}</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="irrigation" className="flex items-center gap-2">
                     <Droplets className="w-4 h-4 text-water-blue" />
-                    Irrigation Type *
+                    {t("form.field.irrigation")} *
                   </Label>
                   <Select value={formData.irrigationType} onValueChange={(v) => updateField("irrigationType", v)}>
                     <SelectTrigger id="irrigation">
-                      <SelectValue placeholder="Select Irrigation Type" />
+                      <SelectValue placeholder={t("form.placeholder.irrigation")} />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50">
                       {irrigationTypes.map((type) => (
@@ -319,17 +337,17 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                   <Leaf className="w-6 h-6 text-leaf-green" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold">Crop History</h3>
-                  <p className="text-sm text-muted-foreground">Previous crop and planting schedule</p>
+                  <h3 className="text-xl font-semibold">{t("form.step3.title")}</h3>
+                  <p className="text-sm text-muted-foreground">{t("form.step3.subtitle")}</p>
                 </div>
               </div>
 
               <div className="grid gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="previousCrop">Previous Crop *</Label>
+                  <Label htmlFor="previousCrop">{t("form.field.previousCrop")} *</Label>
                   <Select value={formData.previousCrop} onValueChange={(v) => updateField("previousCrop", v)}>
                     <SelectTrigger id="previousCrop">
-                      <SelectValue placeholder="Select Previous Crop" />
+                      <SelectValue placeholder={t("form.placeholder.previousCrop")} />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-border z-50">
                       {previousCrops.map((crop) => (
@@ -342,7 +360,7 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Expected Sowing Date *</Label>
+                  <Label>{t("form.field.sowingDate")} *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -356,7 +374,7 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
                         {formData.cultivationDate ? (
                           format(formData.cultivationDate, "PPP")
                         ) : (
-                          <span>Pick a date</span>
+                          <span>{t("form.placeholder.sowingDate")}</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -379,14 +397,14 @@ export const FarmInputForm = ({ onSubmit, onBack }: FarmInputFormProps) => {
           <div className="flex justify-between mt-8 pt-6 border-t border-border/50">
             <Button variant="ghost" onClick={handlePrev}>
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {step === 1 ? "Back to Home" : "Previous"}
+              {step === 1 ? t("form.back") : t("form.previous")}
             </Button>
             <Button
               variant="hero"
               onClick={handleNext}
               disabled={!canProceed()}
             >
-              {step === totalSteps ? "Get Recommendations" : "Next"}
+              {step === totalSteps ? t("form.submit") : t("form.next")}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

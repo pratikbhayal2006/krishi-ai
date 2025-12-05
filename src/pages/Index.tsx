@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import { HeroSection } from "@/components/HeroSection";
 import { FarmInputForm, FarmData } from "@/components/FarmInputForm";
 import { RecommendationDashboard } from "@/components/RecommendationDashboard";
@@ -6,9 +7,9 @@ import { getClimateData, getCropRecommendations, ClimateData, CropRecommendation
 
 type AppState = "hero" | "form" | "results";
 
-const Index = () => {
+const AppContent = () => {
   const [appState, setAppState] = useState<AppState>("hero");
-  const [language, setLanguage] = useState("en");
+  const { language, setLanguage } = useLanguage();
   const [farmData, setFarmData] = useState<FarmData | null>(null);
   const [climate, setClimate] = useState<ClimateData | null>(null);
   const [recommendations, setRecommendations] = useState<CropRecommendation[]>([]);
@@ -20,12 +21,10 @@ const Index = () => {
   const handleFormSubmit = (data: FarmData) => {
     setFarmData(data);
     
-    // Get climate data based on location and date
     const month = data.cultivationDate?.getMonth() ?? new Date().getMonth();
     const climateData = getClimateData(data.state, month + 1);
     setClimate(climateData);
     
-    // Get crop recommendations
     const crops = getCropRecommendations(
       data.soilType,
       data.soilPh,
@@ -76,6 +75,14 @@ const Index = () => {
         />
       )}
     </main>
+  );
+};
+
+const Index = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 };
 

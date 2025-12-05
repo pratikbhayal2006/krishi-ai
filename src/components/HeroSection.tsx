@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Sprout, ArrowRight, Leaf, Sun, Droplets } from "lucide-react";
 
 interface HeroSectionProps {
@@ -9,6 +10,8 @@ interface HeroSectionProps {
 }
 
 export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSectionProps) => {
+  const { t } = useLanguage();
+
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Background Pattern */}
@@ -26,8 +29,8 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
               <Sprout className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">KrishiMitra</h1>
-              <p className="text-xs text-muted-foreground">कृषि मित्र</p>
+              <h1 className="text-xl font-bold text-foreground">{t("app.name")}</h1>
+              <p className="text-xs text-muted-foreground">{t("app.name.hindi")}</p>
             </div>
           </div>
           <LanguageSelector value={language} onChange={onLanguageChange} />
@@ -42,28 +45,28 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
             <div className="space-y-8 animate-fade-in">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
                 <Leaf className="w-4 h-4" />
-                <span>AI-Powered Crop Advisory</span>
+                <span>{t("app.badge")}</span>
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="text-foreground">Krishi Mitra</span>
+                <span className="text-foreground">{t("hero.title.line1")}</span>
                 <br />
-                <span className="text-gradient-hero">Smart Crop Advisor</span>
+                <span className="text-gradient-hero">{t("hero.title.line2")}</span>
                 <br />
-                <span className="text-foreground">for Farmers</span>
+                <span className="text-foreground">{t("hero.title.line3")}</span>
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground max-w-xl">
-                Sowing Smarter Decisions for Better Harvests. Get personalized crop recommendations based on your soil, climate, and farming conditions.
+                {t("app.tagline")} {t("hero.description")}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button variant="hero" size="xl" onClick={onGetStarted}>
-                  Get Crop Recommendation
+                  {t("hero.cta.start")}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
                 <Button variant="glass" size="xl">
-                  Learn More
+                  {t("hero.cta.learn")}
                 </Button>
               </div>
 
@@ -71,15 +74,15 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-border/50">
                 <div>
                   <p className="text-2xl md:text-3xl font-bold text-primary">50+</p>
-                  <p className="text-sm text-muted-foreground">Crops Supported</p>
+                  <p className="text-sm text-muted-foreground">{t("hero.stats.crops")}</p>
                 </div>
                 <div>
-                  <p className="text-2xl md:text-3xl font-bold text-secondary">28</p>
-                  <p className="text-sm text-muted-foreground">States Covered</p>
+                  <p className="text-2xl md:text-3xl font-bold text-secondary">36</p>
+                  <p className="text-sm text-muted-foreground">{t("hero.stats.states")}</p>
                 </div>
                 <div>
                   <p className="text-2xl md:text-3xl font-bold text-accent">12</p>
-                  <p className="text-sm text-muted-foreground">Languages</p>
+                  <p className="text-sm text-muted-foreground">{t("hero.stats.languages")}</p>
                 </div>
               </div>
             </div>
@@ -87,7 +90,6 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
             {/* Right Content - Illustration */}
             <div className="relative hidden lg:block">
               <div className="relative w-full aspect-square max-w-lg mx-auto">
-                {/* Animated circles */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-72 h-72 rounded-full bg-primary/10 animate-pulse-slow" />
                 </div>
@@ -97,15 +99,11 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-40 h-40 rounded-full bg-accent/20 animate-pulse-slow" style={{ animationDelay: "2s" }} />
                 </div>
-
-                {/* Center icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-xl glow-primary">
                     <Sprout className="w-12 h-12 text-primary-foreground" />
                   </div>
                 </div>
-
-                {/* Floating icons */}
                 <div className="absolute top-10 left-10 w-14 h-14 rounded-xl bg-card shadow-lg flex items-center justify-center animate-float">
                   <Sun className="w-7 h-7 text-sun-yellow" />
                 </div>
@@ -115,8 +113,6 @@ export const HeroSection = ({ language, onLanguageChange, onGetStarted }: HeroSe
                 <div className="absolute bottom-20 left-20 w-14 h-14 rounded-xl bg-card shadow-lg flex items-center justify-center animate-float" style={{ animationDelay: "2s" }}>
                   <Leaf className="w-7 h-7 text-leaf-green" />
                 </div>
-
-                {/* Decorative elements */}
                 <div className="absolute bottom-10 right-10 text-6xl animate-float" style={{ animationDelay: "0.5s" }}>
                   🌾
                 </div>
